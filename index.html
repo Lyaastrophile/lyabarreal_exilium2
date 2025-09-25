@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Untuk Akbar — Lya</title>
+  <style>
+    :root{
+      --bg1:#0b0f15;
+      --bg2:#0f1720;
+      --card:#0f1726;
+      --accent:#a78bfa;
+      --muted:#9aa4b2;
+      --glass: rgba(255,255,255,0.03);
+      --glow: 0 8px 30px rgba(167,139,250,0.12);
+      --radius:18px;
+      --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{
+      height:100%; margin:0; padding:0; font-family:var(--font-sans);
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(167,139,250,0.06), transparent),
+                  radial-gradient(900px 400px at 90% 80%, rgba(59,130,246,0.03), transparent),
+                  linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:#e6eef8; display:flex; align-items:center; justify-content:center;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    .card{
+      width: min(760px, 94vw);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:var(--radius); padding:28px; box-shadow:var(--glow);
+      border:1px solid rgba(255,255,255,0.04); backdrop-filter: blur(8px) saturate(120%);
+    }
+    .header{display:flex;align-items:center;gap:16px;margin-bottom:6px;}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent), #5eead4);
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:#07102a;font-size:20px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.6);}
+    h1{margin:0;font-size:20px;letter-spacing:0.2px}
+    p.lead{margin:4px 0 22px;color:var(--muted)}
+    .center{display:flex;align-items:center;justify-content:center}
+    .big-msg{font-size:28px;margin:14px 0 8px}
+    .muted{color:var(--muted);font-size:14px}
+    .btn{appearance:none;border:0;padding:12px 18px;border-radius:12px;font-weight:600;cursor:pointer}
+    .btn-accent{background: linear-gradient(90deg,var(--accent), #60a5fa);color:#07102a;box-shadow:0 8px 24px rgba(96,165,250,0.08)}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+    .question-wrap{margin-top:8px}
+    .card-inner{padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.025)}
+    .question{font-size:18px;margin:0 0 8px}
+    .options{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .option{padding:12px;border-radius:10px;background:var(--glass);cursor:pointer;border:1px solid rgba(255,255,255,0.02);transition:transform 220ms ease, box-shadow 220ms ease;user-select:none}
+    .option:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(0,0,0,0.45)}
+    .progress{height:8px;background:rgba(255,255,255,0.03);border-radius:999px;margin-top:16px;overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent), #60a5fa);width:0%;transition:width 520ms cubic-bezier(.2,.9,.2,1)}
+    .final{display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;padding:30px}
+    .final .heart{font-size:44px;margin-top:6px;opacity:0;transition:opacity 1s ease;}
+    .heart.show{opacity:1;}
+    .meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:13px}
+    .fade-in{animation:fadeIn .6s ease both}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    @media (max-width:640px){.options{grid-template-columns:1fr} .logo{width:46px;height:46px}}
+  </style>
+</head>
+<body>
+  <div class="card fade-in" role="application">
+    <div class="header">
+      <div class="logo">L</div>
+      <div>
+        <h1>Untuk Abang Akbar</h1>
+        <p class="lead">Sebuah sapaan kecil. Klik "Mulai" kalau berani jawab ya 😉</p>
+      </div>
+    </div>
+
+    <div id="app">
+      <div id="start-screen" class="card-inner">
+        <div class="center" style="flex-direction:column">
+          <div class="big-msg">Hei... iya kamu. boleh minta waktunya sebentar?</div>
+          <div class="muted">Aku punya sedikit permainan. Pilih jawabanmu, nanti lihat sendiri hasilnya.</div>
+          <div style="height:18px"></div>
+          <div class="center" style="gap:10px">
+            <button id="btn-start" class="btn btn-accent">Mulai</button>
+            <button id="btn-instr" class="btn btn-ghost">Cara main</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-screen" style="display:none;">
+        <div class="card-inner question-wrap">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div id="q-count" class="small">Pertanyaan 1 dari 4</div>
+              <div id="question" class="question">--</div>
+            </div>
+            <div style="min-width:180px;text-align:right">
+              <div class="small">Progress</div>
+              <div class="progress" aria-hidden="true"><i id="prog-bar"></i></div>
+            </div>
+          </div>
+
+          <div style="height:14px"></div>
+          <div id="options" class="options"></div>
+
+          <div style="height:12px"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <button id="btn-back" class="btn btn-ghost">Kembali</button>
+            <div class="small muted">Pilih jawaban untuk melanjutkan</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="final-screen" style="display:none;">
+        <div class="card-inner final">
+          <div class="small">Jawabanmu tersimpan di perangkat ini ❤️</div>
+          <div class="big-msg">Yap, Abang udah jawab semuanyaaa</div>
+          <div class="muted">Lya cuma mau bilang satu hal...</div>
+          <div class="heart" id="heart-msg">💖 Tetap semangat teruss ya abanggg, kalo cape istirahat, jangan maksain apapun, cuma itu aja, maap kalo ke ganggu.</div>
+          <div style="height:12px"></div>
+          <div style="display:flex;gap:10px">
+            <button id="btn-restart" class="btn btn-accent">Ulangi</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="meta">
+      <div class="small">Tema: Dark Elegant • Pembuat: Lya</div>
+    </div>
+  </div>
+
+  <script>
+    const QUESTIONS = [
+      {q:"Gimana kabar kamu hari ini?", opts:["Sangat baik","Baik","Biasa aja","Kurang baik"], correct:null},
+      {q:"Capek nggak hari ini?", opts:["Sangat capek","Capek","Biasa aja","Enggak capek"], correct:null},
+      {q:"Menurut kamu, siapa yang lagi mikirin kamu sekarang?", opts:["Orang random","Tetangga sebelah","Rahasia","Lya"], correct:3},
+      {q:"Kalau kamu jadi superhero, kekuatan apa yang paling kamu mau?", opts:["Terbang","Bisa bikin makanan enak","Bisa ngomong sama hewan","Bisa teleport"], correct:null}
+    ];
+
+    let idx=0;
+    const answers=[];
+
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const finalScreen = document.getElementById('final-screen');
+    const qCount = document.getElementById('q-count');
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const progBar = document.getElementById('prog-bar');
+    const btnStart = document.getElementById('btn-start');
+    const btnInstr = document.getElementById('btn-instr');
+    const btnBack = document.getElementById('btn-back');
+    const btnRestart = document.getElementById('btn-restart');
+    const heartMsg = document.getElementById('heart-msg');
+
+    function showStart(){ startScreen.style.display='block'; quizScreen.style.display='none'; finalScreen.style.display='none'; }
+    function showQuiz(){ startScreen.style.display='none'; quizScreen.style.display='block'; finalScreen.style.display='none'; }
+    function showFinal(){
+      startScreen.style.display='none';
+      quizScreen.style.display='none';
+      finalScreen.style.display='block';
+      heartMsg.classList.remove('show');
+      setTimeout(()=>heartMsg.classList.add('show'), 400);
+      progBar.style.width='100%';
+    }
+
+    function renderQuestion() {
+      const q = QUESTIONS[idx];
+      qCount.textContent = `Pertanyaan ${idx+1} dari ${QUESTIONS.length}`;
+      questionEl.textContent = q.q;
+      optionsEl.innerHTML = '';
+      q.opts.forEach((opt,i)=>{
+        const btn = document.createElement('div');
+        btn.className='option';
+        btn.textContent=opt;
+        btn.addEventListener('click',()=>{
+          if(q.correct!==null && i!==q.correct){
+            alert('Jawaban salah! Coba lagi ya 😅');
+            return;
+          }
+          answers[idx] = opt;
+          progBar.style.width = `${((idx+1)/QUESTIONS.length)*100}%`;
+          idx++;
+          if(idx >= QUESTIONS.length){
+            showFinal();
+          } else {
+            renderQuestion();
+          }
+        });
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    btnStart.addEventListener('click', ()=>{ idx=0; answers.length=0; renderQuestion(); showQuiz(); });
+    btnInstr.addEventListener('click', ()=>{ alert('Pilih jawabanmu. Jawaban ke-3 harus benar supaya bisa lanjut 😎'); });
+    btnBack.addEventListener('click', ()=>{ if(idx>0){ idx--; renderQuestion(); } });
+    btnRestart.addEventListener('click', ()=>{ showStart(); });
+
+    showStart();
+  </script>
+</body>
+</html>
